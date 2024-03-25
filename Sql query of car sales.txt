@@ -1,0 +1,96 @@
+Select * from car;
+
+-- Total sales
+
+Select Sum(Annual_income)  As Total_sales From Car
+
+SELECT 
+    SUM(Annual_income) AS Total_sales,
+    CASE 
+        WHEN SUM(Annual_income) >= 1000000 THEN FORMAT(SUM(Annual_income) / 1000000.0, '0.#') + 'M'
+        ELSE FORMAT(SUM(Annual_income) / 1000.0, '0.#') + 'K'
+    END AS Annual_Income_Millions
+FROM 
+    Car;
+
+-- Total sales of 2020
+
+Select Sum(annual_income) as Total_sales , year From Car
+Where Year(Date) = '2020'
+Group by year;
+
+-- Total sales of 2020 running total and total sales of month , year , Quarter sales
+
+Select sum(Annual_Income) as Total_sales ,
+ SUM(annual_income) OVER(PARTITION BY YEAR(Date) ORDER BY annual_income) AS Running_sales, 
+ DATEPART(quarter,date) As quaters , 
+ Datepart(Month ,Date) as Months , Year From Car
+Where Year(Date) = '2020' 
+Group by YEAR(Date), DATEPART(quarter, Date),DATEPART(month, Date) , Year , Annual_Income
+Order by DATEPART(quarter, Date),DATEPART(month, Date)
+
+--Total sales of 2020 total sales of month , year , Quarter sales
+
+Select sum(Annual_Income) as Total_sales ,
+ DATEPART(quarter,date) As quaters , 
+ Datepart(Month ,Date) as Months , Year From Car
+Where Year(Date) = '2020' 
+Group by YEAR(Date), DATEPART(quarter, Date),DATEPART(month, Date) , Year , Annual_Income
+Order by DATEPART(quarter, Date),DATEPART(month, Date)
+
+Select sum(Annual_Income) as Total_sales ,
+ DATEPART(quarter,date) As quaters , 
+ Datepart(Month ,Date) as Months , Year From Car
+Where Year(Date) = '2021' 
+Group by YEAR(Date), DATEPART(quarter, Date),DATEPART(month, Date) , Year , Annual_Income
+Order by DATEPART(quarter, Date),DATEPART(month, Date)
+
+-- Total sales of gender
+
+select Gender_Full , Sum(Annual_Income) as Total_sales From Car
+Group by Gender_full
+
+-- Total sales of boby style 
+
+Select Body_Style, Sum(Annual_Income) as Total_sales  from Car
+Group by Body_Style
+
+--Total sales of Color_Name
+
+Select Color_Name , Sum(Annual_Income) as Total_sales  from Car
+Group by Color_Name
+
+-- Top 10 customers of Transmission and Engine
+
+select Top 10 [Customer Name] , Transmission , Engine , Annual_Income from Car
+Order by Annual_Income DESC
+
+-- Ranking Function According to annual_income
+
+select Top 10 [Customer Name] , Transmission , Engine , Annual_Income , Row_number() Over( order by Annual_Income DESC) from Car
+Order by Annual_Income DESC
+
+SELECT 
+    [Customer Name], 
+    Transmission, 
+    Engine, 
+    FORMAT(Annual_Income / 1000000.0, '0.#') + 'M' AS Annual_Income_Millions,
+    ROW_NUMBER() OVER (ORDER BY Annual_Income DESC) AS Row_Num
+FROM 
+Car
+ORDER BY 
+    Annual_Income DESC;
+
+SELECT 
+    [Customer Name], 
+    Transmission, 
+    Engine, 
+    CASE 
+        WHEN Annual_Income >= 1000000 THEN FORMAT(Annual_Income / 1000000.0, '0.#') + 'M'
+        ELSE FORMAT(Annual_Income / 1000.0, '0.#') + 'K'
+    END AS Annual_Income_Formatted,
+    ROW_NUMBER() OVER (ORDER BY Annual_Income DESC) AS Row_Num
+FROM 
+    Car
+ORDER BY 
+    Annual_Income DESC;
